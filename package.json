@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/vikserver/vikserver-backend/issues"
   },
-  "homepage": "https://github.com/vikserver/vikserver-backend#readme"
+  "homepage": "https://github.com/vikserver/vikserver-backend#readme",
+  "dependencies": {
+    "socket.io": "^2.0.3"
+  }
 }
