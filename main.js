@@ -35,12 +35,19 @@ http.listen(port, ()=>{
 });
 io.on("connection", socket=>{
 	socket.on("chk", a=>{
-		query("SELECT * FROM usuarios WHERE nombre='"+a.msg+"'").then(a=>{
-			if(a.res.length>0){
-				socket.emit("chk2", true);
-			}else{
+		query("SELECT nombre FROM usuarios WHERE nombre='"+a.msg+"'").then(b=>{
+			console.log(b.res);
+			if(b.res.length==0){
 				socket.emit("chk2", false);
+				return;
 			}
+			b.res.forEach(c=>{
+				if(c.nombre==a.msg){
+					socket.emit("chk2", true);
+					return;
+				}
+			});
+			socket.emit("chk2", false);
 		}).catch(e=>{
 			console.error("Ha habido un fallo al conectar con la base de datos");
 			console.error(e);
