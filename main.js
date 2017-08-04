@@ -1,11 +1,11 @@
 console.log("Iniciando backend...");
 //Parte general
 const fs=require("fs");
-const crypto=require("crypto");
+var creds=require("./.privado/credenciales.json");
+
 //Parte de MySQL
 const mysql=require("mysql");
-var creds=require("./.privado/credenciales.json");
-var pool=mysql.createPool(creds);
+var pool=mysql.createPool(creds.mysql);
 pool.query("SELECT * FROM test", (err, res)=>{
 	if(err) throw err;
 	console.log("Conectado a MySQL con éxito");
@@ -18,10 +18,56 @@ function query(a){
 		});
 	});
 }
-var token;
-query("SELECT valor FROM Seguridad WHERE id='token'").then(a=>{
-	token=a;
+
+//Parte de OpenPGP
+var pgpKeys,
+	pgpObj;
+const openpgp=require("openpgp");
+query("SELECT * FROM Claves WHERE id='WebSocket'").then(a=>{
+	if(a.res.length==1){
+		console.log("Claves recuperadas de la base de datos");
+		pgpKeys={
+			pública: a.res[0].public,
+			privada: a.res[0].private
+		};
+		pgpObj={
+			pública: openpgp.key.readArmored(a.res[0].public).keys,
+			privada: openpgp.key.readArmored(a.res[0].private).keys[0]
+		}
+		if(pgpObj.privada.decrypt(creds.openpgp.passphrase)){
+			console.log("Clave de servidor OpenPGP desencriptada");
+		}else{
+			console.error("La contraseña para la clave OpenPGP no es correcta!");
+			throw new Error("Error al desencriptar la clave OpenPGP");
+		}
+	}else{
+		console.log("Generando una nueva clave...");
+		openpgp.generateKey(creds.openpgp).then(key=>{
+			console.log("Claves generadas correctamente");
+			pgpKeys={
+				pública: key.publicKeyArmored,
+				privada: key.privateKeyArmored
+			};
+			pgpObj={
+				pública: openpgp.key.readArmored(pgpKeys.pública).keys,
+				privada: openpgp.key.readArmored(pgpKeys.privada).keys[0]
+			}
+			if(pgpObj.privada.decrypt(creds.openpgp.passphrase)){
+				console.log("Clave de servidor OpenPGP desencriptada");
+			}else{
+				console.error("La contraseña para la clave OpenPGP no es correcta!");
+				throw new Error("Error al desencriptar la clave OpenPGP");
+			}
+			query("INSERT into Claves (id, public, private) VALUES ('WebSocket', '"+pgpKeys.pública+"', '"+pgpKeys.privada+"')").then(()=>{
+				console.log("Claves guardadas en la base de datos correctamente");
+			});
+		}).catch(e=>{
+			console.error("Ha habido un error al generar e introducir la nueva clave PGP en la base de datos");
+			throw e;
+		});
+	}
 });
+
 //Parte de SocketIO
 var app=require("express")();
 var http=require("http").Server(app);
@@ -34,9 +80,10 @@ http.listen(port, ()=>{
 	console.log("Servidor WEB iniciado en el puerto "+port);
 });
 io.on("connection", socket=>{
+	socket.emit("pgp", {name: "WebSocketServer", key: pgpKeys.pública});
+	firmar("msg", "Mensaje firmado por el servidor usando PGP", socket);
 	socket.on("chk", a=>{
 		query("SELECT nombre FROM usuarios WHERE nombre='"+a.msg+"'").then(b=>{
-			console.log(b.res);
 			if(b.res.length==0){
 				socket.emit("chk2", false);
 				return;
@@ -53,4 +100,15 @@ io.on("connection", socket=>{
 			console.error(e);
 		});
 	});
+	socket.on("hash", a=>{
+		
+	})
 });
+function firmar(a, b, socket){
+	openpgp.sign({
+		data:String(b),
+		privateKeys: pgpObj.privada
+	}).then(signed=>{
+		socket.emit(a, signed.data);
+	});
+}
