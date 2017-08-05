@@ -140,7 +140,7 @@ function sync(a, socket){
 	desencriptar(a.msg).then(b=>{
 		console.log(b.data);
 		let c=JSON.parse(b.data);
-		comprobar({data: c.db, usuario: c.usuario}).then(d=>{
+		comprobar({msg: c.db, usuario: c.usuario}).then(d=>{
 			if(d==false){
 				throw new Error("No hemos podido verificar que la base de datos sea de tu propiedad");
 			}
