@@ -162,18 +162,6 @@ function firmar(a, b, socket){
 		socket.emit(a, signed.data);
 	});
 }
-function desencriptar(a){
-	return openpgp.decrypt({
-		message: openpgp.message.readArmored(a),
-		privateKey: pgpObj.privada
-	});
-}
-function encriptar(a){
-	return openpgp.encrypt({
-		data: a.msg,
-		publicKeys: openpgp.key.readArmored(a.key).keys
-	});
-}
 function comprobar(a){
 	return new Promise((resolver, rechazar)=>{
 		query("SELECT pgp,nombre FROM usuarios WHERE nombre='"+a.usuario+"'").then(b=>{
@@ -194,5 +182,17 @@ function comprobar(a){
 				});
 			});
 		});
+	});
+}
+function encriptar(a){
+	return openpgp.encrypt({
+		data: a.msg,
+		publicKeys: openpgp.key.readArmored(a.key).keys
+	});
+}
+function desencriptar(a){
+	return openpgp.decrypt({
+		message: openpgp.message.readArmored(a),
+		privateKey: pgpObj.privada
 	});
 }
