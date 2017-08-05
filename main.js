@@ -110,7 +110,7 @@ io.on("connection", socket=>{
 					return;
 				}
 				d.res.forEach(f=>{
-					if(f.usuario==c.usuario){
+					if(f.nombre==c.usuario){
 						if(openpgp.key.readArmored(JSON.parse(f.pgp).privada).decrypt(c.contraseña)){
 							socket.emit("req-pgp2", {usuario: c.usuario, pgp:f.pgp});
 						}else{
@@ -128,6 +128,22 @@ io.on("connection", socket=>{
 		});
 	});
 });
+
+function sync(a, socket){
+	desencriptar(a.msg).then(b=>{
+		let c=JSON.parse(b.data);
+		comprobar({data: c.db, usuario: c.usuario}).then(d=>{
+			if(d==false){
+				throw new Error("No hemos podido verificar que la base de datos sea de tu propiedad");
+			}
+			query("UPDATE usuarios SET db='"+d.data+"' WHERE nombre='"+c.usuario+"'").then(a=>{
+				socket.emit("sync2", true);
+			})
+		}).catch(e=>{
+			socket.emit("sync2", false);
+		});
+	});
+}
 function firmar(a, b, socket){
 	openpgp.sign({
 		data:String(b),
@@ -146,5 +162,27 @@ function encriptar(a){
 	return openpgp.encrypt({
 		data: a.msg,
 		publicKeys: openpgp.key.readArmored(a.key).keys
+	});
+}
+function comprobar(a){
+	return new Promise((resolver, rechazar)=>{
+		query("SELECT pgp,nombre FROM usuarios WHERE nombre='"+a.usuario+"'").then(b=>{
+			if(b.res.length<1){
+				rechazar("No hemos podido encontrar el usuario ni su clave");
+				return;
+			}
+			b.res.forEach(c=>{
+				if(c.nombre!=a.usuario) return;
+				openpgp.verify({
+					message: openpgp.cleartext.readArmored(a.msg),
+					publicKeys: openpgp.key.readArmored(JSON.parse(c.pgp).pública).keys
+				}).then(d=>{
+					if(d.signatures[0].valid){
+						resolver({data: d.data});
+						return;
+					}
+				});
+			});
+		});
 	});
 }
