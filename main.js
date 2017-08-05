@@ -58,7 +58,7 @@ query("SELECT * FROM Claves WHERE id='WebSocket'").then(a=>{
 				console.error("La contraseña para la clave OpenPGP no es correcta!");
 				throw new Error("Error al desencriptar la clave OpenPGP");
 			}
-			query("INSERT into Claves (id, public, private) VALUES ('WebSocket', '"+pgpKeys.pública+"', '"+pgpKeys.privada+"')").then(()=>{
+			query("INSERT INTO Claves (id, public, private) VALUES ('WebSocket', '"+pgpKeys.pública+"', '"+pgpKeys.privada+"')").then(()=>{
 				console.log("Claves guardadas en la base de datos correctamente");
 			});
 		}).catch(e=>{
@@ -110,8 +110,8 @@ io.on("connection", socket=>{
 				}
 				d.res.forEach(f=>{
 					if(f.nombre==c.usuario){
-						if(openpgp.key.readArmored(JSON.parse(f.pgp).privada).decrypt(c.contraseña)){
-							socket.emit("req-pgp2", {usuario: c.usuario, pgp:f.pgp});
+						if(openpgp.key.readArmored(f.privateKey).decrypt(c.contraseña)){
+							socket.emit("req-pgp2", {usuario: c.usuario, pgp:{privada: f.privateKey, pública: f.publicKey}});
 						}else{
 							socket.emit("req-pgp2", false);
 						}
@@ -123,7 +123,7 @@ io.on("connection", socket=>{
 	socket.on("registro", a=>{
 		desencriptar(a.msg).then(b=>{
 			let c=JSON.parse(b.data);
-			return query("INSERT INTO usuarios (nombre, pgp) VALUES ('"+c.creds.usuario+"', '"+JSON.stringify(c.keys)+"')");
+			return query("INSERT INTO usuarios (nombre, privateKey, publicKey) VALUES ('"+c.creds.usuario+"', '"+c.keys.privada+"', '"+c.keys.pública+"')");
 		}).then(()=>{
 			socket.emit("registro2", true);
 		}).catch(e=>{
@@ -164,7 +164,7 @@ function firmar(a, b, socket){
 }
 function comprobar(a){
 	return new Promise((resolver, rechazar)=>{
-		query("SELECT pgp,nombre FROM usuarios WHERE nombre='"+a.usuario+"'").then(b=>{
+		query("SELECT publicKey,nombre FROM usuarios WHERE nombre='"+a.usuario+"'").then(b=>{
 			if(b.res.length<1){
 				rechazar("No hemos podido encontrar el usuario ni su clave");
 				return;
@@ -173,7 +173,7 @@ function comprobar(a){
 				if(c.nombre!=a.usuario) return;
 				openpgp.verify({
 					message: openpgp.cleartext.readArmored(a.msg),
-					publicKeys: openpgp.key.readArmored(JSON.parse(c.pgp).pública).keys
+					publicKeys: openpgp.key.readArmored(JSON.parse(c.publicKey).pública).keys
 				}).then(d=>{
 					if(d.signatures[0].valid){
 						resolver({data: d.data});
