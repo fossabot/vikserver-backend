@@ -4,8 +4,8 @@
   "description": "Servidor en NodeJS para vikserver",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js",
-    "init": "node main.js",
+    "start": "node chk.js && node main.js",
+    "run": "node chk.js && node main.js",
     "test": "node test.js"
   },
   "repository": {
