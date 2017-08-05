@@ -132,10 +132,14 @@ io.on("connection", socket=>{
 			console.error(e);
 		});
 	});
+	socket.on("sync", a=>{
+		sync(a, socket);
+	});
 });
 
 function sync(a, socket){
 	desencriptar(a.msg).then(b=>{
+		console.log(b.data);
 		let c=JSON.parse(b.data);
 		comprobar({data: c.db, usuario: c.usuario}).then(d=>{
 			if(d==false){
@@ -147,6 +151,9 @@ function sync(a, socket){
 		}).catch(e=>{
 			socket.emit("sync2", false);
 		});
+	}).catch(e=>{
+		socket.emit("sync2", false);
+		socket.emit("error", e);
 	});
 }
 function firmar(a, b, socket){
