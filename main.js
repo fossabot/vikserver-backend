@@ -124,8 +124,7 @@ io.on("connection", socket=>{
 	socket.on("registro", a=>{
 		desencriptar(a.msg).then(b=>{
 			let c=JSON.parse(b.data);
-			console.log(c);
-			return query("INSERT INTO usuarios (nombre, pgp) VALUES ('"+c.creds.usuario+"', '"+c.keys+"')");
+			return query("INSERT INTO usuarios (nombre, pgp) VALUES ('"+c.creds.usuario+"', '"+JSON.stringify(c.keys)+"')");
 		}).then(()=>{
 			socket.emit("registro2", true);
 		}).catch(e=>{
