@@ -81,7 +81,6 @@ http.listen(port, ()=>{
 });
 io.on("connection", socket=>{
 	socket.emit("pgp", {name: "WebSocketServer", key: pgpKeys.pública});
-	firmar("msg", "Mensaje firmado por el servidor usando PGP", socket);
 	socket.on("chk", a=>{
 		query("SELECT nombre FROM usuarios WHERE nombre='"+a.msg+"'").then(b=>{
 			if(b.res.length==0){
