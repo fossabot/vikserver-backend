@@ -100,9 +100,34 @@ io.on("connection", socket=>{
 			console.error(e);
 		});
 	});
-	socket.on("hash", a=>{
-		
-	})
+	socket.on("req-pgp", a=>{
+		desencriptar(a.msg).then(b=>{
+			let c=b.data;
+			console.log(c);
+			query("SELECT * FROM usuarios WHERE nombre='"+c.usuario+"'").then(d=>{
+				if(d.res.length<1){
+					socket.emit("req-pgp2", false);
+					socket.emit("direct", "No hemos podido encontrar tu usuario y su clave PGP asociada");
+					return;
+				}
+				d.res.forEach(f=>{
+					if(f.usuario==c.usuario){
+						if(openpgp.key.readArmored(JSON.parse(f.pgp).privada).decrypt(c.contraseña)){
+							socket.emit("req-pgp2", {usuario: c.usuario, pgp:f.pgp});
+						}else{
+							socket.emit("req-pgp2", false);
+						}
+					}
+				});
+			});
+		});
+	});
+	socket.on("registro", a=>{
+		desencriptar(a.msg).then(b=>{
+			let c=b.data;
+			return query("INSERT INTO usuarios (nombre, pgp) VALUES ('"+c.usuario+"', '"+c.pgp+"')");
+		});
+	});
 });
 function firmar(a, b, socket){
 	openpgp.sign({
