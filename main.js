@@ -173,7 +173,7 @@ function comprobar(a){
 				if(c.nombre!=a.usuario) return;
 				openpgp.verify({
 					message: openpgp.cleartext.readArmored(a.msg),
-					publicKeys: openpgp.key.readArmored(JSON.parse(c.publicKey).pública).keys
+					publicKeys: openpgp.key.readArmored(c.publicKey).keys
 				}).then(d=>{
 					if(d.signatures[0].valid){
 						resolver({data: d.data});
