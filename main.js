@@ -102,8 +102,7 @@ io.on("connection", socket=>{
 	});
 	socket.on("req-pgp", a=>{
 		desencriptar(a.msg).then(b=>{
-			let c=b.data;
-			console.log(c);
+			let c=JSON.parse(b.data);
 			query("SELECT * FROM usuarios WHERE nombre='"+c.usuario+"'").then(d=>{
 				if(d.res.length<1){
 					socket.emit("req-pgp2", false);
@@ -124,7 +123,7 @@ io.on("connection", socket=>{
 	});
 	socket.on("registro", a=>{
 		desencriptar(a.msg).then(b=>{
-			let c=b.data;
+			let c=JSON.parse(b.data);
 			return query("INSERT INTO usuarios (nombre, pgp) VALUES ('"+c.usuario+"', '"+c.pgp+"')");
 		});
 	});
