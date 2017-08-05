@@ -138,7 +138,6 @@ io.on("connection", socket=>{
 
 function sync(a, socket){
 	desencriptar(a.msg).then(b=>{
-		console.log(b.data);
 		let c=JSON.parse(b.data);
 		comprobar({msg: c.db, usuario: c.usuario}).then(d=>{
 			if(d==false){
@@ -146,7 +145,7 @@ function sync(a, socket){
 			}
 			query("UPDATE usuarios SET db='"+d.data+"' WHERE nombre='"+c.usuario+"'").then(a=>{
 				socket.emit("sync2", true);
-			})
+			});
 		}).catch(e=>{
 			socket.emit("sync2", false);
 		});
