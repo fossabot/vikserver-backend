@@ -3,10 +3,14 @@ var mysql=require("mysql");
 var fs=require("fs");
 var creds=require("./.privado/credenciales.json");
 creds.mysql["multipleStatements"]=true;
+console.log("Conectando al servidor MySQL");
 var pool=mysql.createPool(creds.mysql);
 pool.query("SELECT 1+1 AS solucion", err=>{
-	console.error("El servidor no ha sido capaz de resolver 1+1, no podemos continuar");
-	throw err;
+	if(err){
+		console.error("El servidor no ha sido capaz de resolver 1+1, no podemos continuar");
+		throw err;
+	}
+	console.log("Conexión establecida con el servidor");
 });
 pool.query("SELECT * FROM test", (err, res)=>{
 	if(err){
