@@ -131,8 +131,19 @@ io.on("connection", socket=>{
 			console.error(e);
 		});
 	});
+	socket.on("req-sync", a=>{
+		query("SELECT nombre,publicKey,db FROM usuarios WHERE nombre='"+a.msg.usuario+"'").then(b=>{
+			encriptar({msg: new Buffer(b.res[0].db, "base64").toString("utf8"), key:b.res[0].publicKey}).then(c=>{
+				socket.emit("req-sync2", c.data);
+			});
+		});
+	});
 	socket.on("sync", a=>{
 		sync(a, socket);
+	});
+	socket.on("login", a=>{
+		console.log("Recibido Login!");
+		socket.emit("login2", false);
 	});
 });
 
@@ -143,7 +154,7 @@ function sync(a, socket){
 			if(d==false){
 				throw new Error("No hemos podido verificar que la base de datos sea de tu propiedad");
 			}
-			query("UPDATE usuarios SET db='"+d.data+"' WHERE nombre='"+c.usuario+"'").then(a=>{
+			query("UPDATE usuarios SET db='"+new Buffer(d.data).toString("base64")+"' WHERE nombre='"+c.usuario+"'").then(a=>{
 				socket.emit("sync2", true);
 			});
 		}).catch(e=>{
