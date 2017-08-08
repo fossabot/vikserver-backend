@@ -110,10 +110,10 @@ io.on("connection", socket=>{
 				}
 				d.res.forEach(f=>{
 					if(f.nombre==c.usuario){
-						if(openpgp.key.readArmored(f.privateKey).decrypt(c.contraseña)){
-							socket.emit("req-pgp2", {usuario: c.usuario, pgp:{privada: f.privateKey, pública: f.publicKey}});
+						if(openpgp.key.readArmored(f.privateKey).keys[0].decrypt(c.contraseña)){
+							return socket.emit("req-pgp2", {usuario: c.usuario, pgp:{privada: f.privateKey, pública: f.publicKey}});
 						}else{
-							socket.emit("req-pgp2", false);
+							return socket.emit("req-pgp2", false);
 						}
 					}
 				});
@@ -140,10 +140,6 @@ io.on("connection", socket=>{
 	});
 	socket.on("sync", a=>{
 		sync(a, socket);
-	});
-	socket.on("login", a=>{
-		console.log("Recibido Login!");
-		socket.emit("login2", false);
 	});
 });
 
