@@ -28,5 +28,6 @@ pool.query("SELECT * FROM test", (err, res)=>{
 	}
 });
 function terminar(){
+	console.log("Terminando el script de comprobaciones");
 	pool.end();
 }
