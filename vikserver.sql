@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 172.17.0.2:3306
--- Tiempo de generación: 12-08-2017 a las 19:23:21
+-- Tiempo de generación: 12-08-2017 a las 19:52:33
 -- Versión del servidor: 10.1.23-MariaDB-1~jessie
 -- Versión de PHP: 7.1.8
 
@@ -46,6 +46,14 @@ CREATE TABLE `misc` (
   `valor` varchar(100) COLLATE utf8_bin NOT NULL,
   `actualizada` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Tabla de relacciones clave-valor';
+
+--
+-- Volcado de datos para la tabla `misc`
+--
+
+INSERT INTO `misc` (`clave`, `valor`, `actualizada`) VALUES
+('latencia', '', '2017-08-12 19:43:31'),
+('recursos', '', '2017-08-12 19:43:54');
 
 -- --------------------------------------------------------
 
