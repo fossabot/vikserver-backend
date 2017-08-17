@@ -165,6 +165,8 @@ function sync(a, socket){
 		let c=JSON.parse(b.data);
 		comprobar({msg: c.db, usuario: c.usuario}).then(d=>{
 			if(d==false){
+				socket.emit("direct", "La clave con la que se ha firmado la base de datos no es la tuya :(");
+				socket.emit("sync2", false);
 				throw new Error("No hemos podido verificar que la base de datos sea de tu propiedad");
 			}
 			query("UPDATE usuarios SET db='"+new Buffer(d.data).toString("base64")+"' WHERE nombre='"+c.usuario+"'").then(a=>{
