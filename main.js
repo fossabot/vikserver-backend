@@ -143,7 +143,6 @@ io.on("connection", socket=>{
 	});
 	socket.on("decidir_sync", a=>{
 		query("SELECT SHA2(db, '256'),modificado FROM usuarios WHERE nombre='"+a.msg.usuario+"'").then(b=>{
-			console.log(b.res);
 			let sSha=b.res[0]['SHA2(db, \'256\')'];
 			let res=b.res[0];
 			if(sSha==a.msg.db){
