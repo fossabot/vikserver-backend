@@ -150,7 +150,7 @@ io.on("connection", socket=>{
 				return;
 			}
 			if(res.modificado>a.msg.fecha){
-				socket.emit("decidir_sync2", "server");
+				socket.emit("decidir_sync2", "servidor");
 				return;
 			}else{
 				socket.emit("decidir_sync2", "cliente");
