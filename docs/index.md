@@ -1,3 +1,6 @@
+---
+title: Vikserver docs
+---
 # Welcome to the docs
 ## Functions
 #### MySQL
