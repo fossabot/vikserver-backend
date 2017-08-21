@@ -3,3 +3,4 @@ node_modules
 .directory
 .privado/*.json
 /temp
+/docs
