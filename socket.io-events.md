@@ -1,0 +1,64 @@
+# Socket.io events
+
+### Initial events
+- `connection`
+  - Send server's openPGP public key
+  - Create per connection events
+
+### Per connection events
+- `chk`
+  - Checks if the given username exists in he database
+  - in: 
+    - msg: String(user)
+  - out: Boolean(true||false)
+  - return event: `chk2`
+- `req-pgp`
+  - Checks if the given password can decrypt the OpenPGP key
+  - in: Object({msg-> encryptedMsg(Object(String(usuario), String(contraseña)))})
+    - msg: ciphertext->with server key
+      - JSON string
+        - usuario: String(user)
+        - contraseña sha256 of the password
+  - out:
+    - Boolean(false)||
+    - usuario: String(user),
+    - pgp
+      - pública: String(PublicKey)
+      - privada: String(privateKey)
+  - out event: `req-pgp2`
+- `registro`
+  - Registers the given username and password
+  - in:
+    - encryptedMsg
+      - creds:
+        - usuario: String(user)
+      - keys:
+        - pública: String(publicKey)
+        - privada: String(privateKey)
+  - out: Boolean(true||false)
+  - out event: `registro2`
+- `req_sync`
+  - Returns the encrypted database of the given user
+  - in: Object({msg: Object({usuario-> String(user)})})
+    - msg:
+      - usuario: String(user)
+  - out:
+    - ciphertext
+      - usuario: String(user)
+      - db: ciphertext(db)
+  - out event: `req_sync2`
+- `sync`
+  - Introduces the changed db into MySQL
+  - in: 
+    - msg: ciphertext(db)
+  - out: Boolean(true||false)
+  - out event: `sync2`
+- `decidir_sync`
+  - Looks for the newest db if the checksums of the online db and the user db differs.
+  - in: 
+    - msg:
+      - usuario: String(username),
+      - db: sha256 of the user db
+      - fecha: Date in seconds from UNIX
+  - out: Boolean(false)||String("servidor"||"cliente")
+  -out event: `decidir_sync2`
