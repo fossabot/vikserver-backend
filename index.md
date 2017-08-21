@@ -5,3 +5,4 @@ This docs are intended to help contributors understand this project. As many thi
 
 ### Index
 - [Functions explaination](functions.md)
+- [Socket.io events](socket.io-events.md)
