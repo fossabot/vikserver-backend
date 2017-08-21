@@ -1,4 +1,4 @@
-[Main menu](index.md)
+#### [Main menu](index.md)
 # Functions explaination
 
 #### MySQL

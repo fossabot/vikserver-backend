@@ -1,4 +1,4 @@
-[Main menu](index.md)
+#### [Main menu](index.md)
 # Socket.io events
 
 ### Initial events
