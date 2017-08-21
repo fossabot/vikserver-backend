@@ -38,7 +38,7 @@
         - privada: String(privateKey)
   - out: Boolean(true or false)
   - out event: `registro2`
-- `req_sync`
+- `req-sync`
   - Returns the encrypted database of the given user
   - in: Object({msg: Object({usuario-> String(user)})})
     - msg:
@@ -47,7 +47,7 @@
     - ciphertext
       - usuario: String(user)
       - db: ciphertext(db)
-  - out event: `req_sync2`
+  - out event: `req-sync2`
 - `sync`
   - Introduces the changed db into MySQL
   - in: 
