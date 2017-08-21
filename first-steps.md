@@ -1,5 +1,5 @@
 #### [Main menu](index.md)
-# Firs steps in the backend
+# First steps in the backend
 If you're going to host your own backend, take note of some thigs
 - The project is not download-and-start
 - Some actions are required
