@@ -1,5 +1,5 @@
 #### [Main menu](index.md)
-# Functions explaination
+# Functions explanation
 
 #### MySQL
 - `pool.query`
