@@ -44,7 +44,7 @@ The server needs a OpenPGP key to sign, encrypt and decrypt messages
     {
         "mysql":{
             "host": "yoursuper.fast.host",
-            "user": "backend_user", !Please, don't use `root`
+            "user": "nonrootuser",
             "password": "mysuperlongandnotequaltotheusernamepassword",
             "database": "mySuperFastdb"
         },
