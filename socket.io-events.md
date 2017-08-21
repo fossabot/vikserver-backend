@@ -14,7 +14,7 @@
   - return event: `chk2`
 - `req-pgp`
   - Checks if the given password can decrypt the OpenPGP key
-  - in: Object({msg-> encryptedMsg(Object(String(usuario), String(contraseña)))})
+  - in: 
     - msg: ciphertext->with server key
       - JSON string
         - usuario: String(user)
@@ -61,4 +61,4 @@
       - db: sha256 of the user db
       - fecha: Date in seconds from UNIX
   - out: Boolean(false) or String("servidor" or "cliente")
-  -out event: `decidir_sync2`
+  - out event: `decidir_sync2`
