@@ -10,7 +10,7 @@
   - Checks if the given username exists in he database
   - in: 
     - msg: String(user)
-  - out: Boolean(true||false)
+  - out: Boolean(true or false)
   - return event: `chk2`
 - `req-pgp`
   - Checks if the given password can decrypt the OpenPGP key
@@ -20,7 +20,7 @@
         - usuario: String(user)
         - contraseña sha256 of the password
   - out:
-    - Boolean(false)||
+    - Boolean(false) or 
     - usuario: String(user),
     - pgp
       - pública: String(PublicKey)
@@ -35,7 +35,7 @@
       - keys:
         - pública: String(publicKey)
         - privada: String(privateKey)
-  - out: Boolean(true||false)
+  - out: Boolean(true or false)
   - out event: `registro2`
 - `req_sync`
   - Returns the encrypted database of the given user
@@ -51,7 +51,7 @@
   - Introduces the changed db into MySQL
   - in: 
     - msg: ciphertext(db)
-  - out: Boolean(true||false)
+  - out: Boolean(true or false)
   - out event: `sync2`
 - `decidir_sync`
   - Looks for the newest db if the checksums of the online db and the user db differs.
@@ -60,5 +60,5 @@
       - usuario: String(username),
       - db: sha256 of the user db
       - fecha: Date in seconds from UNIX
-  - out: Boolean(false)||String("servidor"||"cliente")
+  - out: Boolean(false) or String("servidor" or "cliente")
   -out event: `decidir_sync2`
