@@ -149,7 +149,8 @@ io.on("connection", socket=>{
 				socket.emit("decidir_sync2", false);
 				return;
 			}
-			if(res.modificado>a.msg.fecha){
+			let fechaSrv=new Date(res.modificado).getTime();
+			if(fechaSrv>a.msg.fecha){
 				socket.emit("decidir_sync2", "servidor");
 				return;
 			}else{
