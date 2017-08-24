@@ -105,7 +105,7 @@ io.on("connection", socket=>{
 			query("SELECT * FROM usuarios WHERE nombre='"+c.usuario+"'").then(d=>{
 				if(d.res.length<1){
 					socket.emit("req-pgp2", false);
-					socket.emit("direct", "No hemos podido encontrar tu usuario y su clave PGP asociada");
+					socket.emit("direct", "pgp_404");
 					return;
 				}
 				d.res.forEach(f=>{
@@ -165,7 +165,7 @@ function sync(a, socket){
 		let c=JSON.parse(b.data);
 		comprobar({msg: c.db, usuario: c.usuario}).then(d=>{
 			if(d==false){
-				socket.emit("direct", "La clave con la que se ha firmado la base de datos no es la tuya :(");
+				socket.emit("direct", "pgp_sign_check_nok");
 				socket.emit("sync2", false);
 				throw new Error("No hemos podido verificar que la base de datos sea de tu propiedad");
 			}
