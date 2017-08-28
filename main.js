@@ -171,7 +171,6 @@ function sync(a, socket){
 				throw new Error("No hemos podido verificar que la base de datos sea de tu propiedad");
 			}
 			query("UPDATE usuarios SET db='"+new Buffer(d.data).toString("base64")+"' WHERE nombre='"+c.usuario+"'").then(a=>{
-                console.log("Sync OK");
 				socket.emit("sync2", true);
 			});
 		}).catch(e=>{
