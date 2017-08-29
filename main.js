@@ -118,7 +118,10 @@ io.on("connection", socket=>{
 					}
 				});
 			});
-		});
+		}).catch(e=>{
+			console.log("Error al desencriptar");
+			console.error(e);
+		})
 	});
 	socket.on("registro", a=>{
 		desencriptar(a.msg).then(b=>{
@@ -165,12 +168,14 @@ function sync(a, socket){
 	desencriptar(a.msg).then(b=>{
 		let c=JSON.parse(b.data);
 		comprobar({msg: c.db, usuario: c.usuario}).then(d=>{
+			console.log("DB chk OK");
 			if(d==false){
 				socket.emit("direct", "pgp_sign_check_nok");
 				socket.emit("sync2", false);
 				throw new Error("No hemos podido verificar que la base de datos sea de tu propiedad");
 			}
 			query("UPDATE usuarios SET db='"+new Buffer(d.data).toString("base64")+"' WHERE nombre='"+c.usuario+"'").then(a=>{
+				console.log("MySQL query OK");
 				socket.emit("sync2", true);
 			});
 		}).catch(e=>{
