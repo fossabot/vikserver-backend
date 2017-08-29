@@ -153,7 +153,7 @@ io.on("connection", socket=>{
 				return;
 			}
 			let fechaSrv=new Date(res.modificado).getTime();
-			socket.emit("msg", {srv: fechaSrv, msg: a.msg.fecha});
+			socket.emit("msg", {srv: fechaSrv, res: res, msg: a.msg.fecha});
 			if(fechaSrv>a.msg.fecha){
 				socket.emit("decidir_sync2", "servidor");
 				return;
