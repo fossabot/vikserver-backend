@@ -1,6 +1,7 @@
 console.log("Iniciando backend...");
 //Parte general
 const fs=require("fs");
+const moment=require("moment-timezone");
 var creds=require("./.privado/credenciales.json");
 
 //Parte de MySQL
@@ -152,7 +153,7 @@ io.on("connection", socket=>{
 				socket.emit("decidir_sync2", false);
 				return;
 			}
-			let fechaSrv=new Date(res.modificado).getTime();
+			let fechaSrv=moment.tz(res.modificado, "Europe/Madrid").format("x");
 			socket.emit("msg", {srv: fechaSrv, res: res, msg: a.msg.fecha});
 			if(fechaSrv>a.msg.fecha){
 				socket.emit("decidir_sync2", "servidor");
