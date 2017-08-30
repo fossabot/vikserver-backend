@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 172.17.0.2:3306
--- Tiempo de generación: 12-08-2017 a las 19:52:33
+-- Tiempo de generación: 30-08-2017 a las 11:45:45
 -- Versión del servidor: 10.1.23-MariaDB-1~jessie
 -- Versión de PHP: 7.1.8
 
@@ -52,8 +52,8 @@ CREATE TABLE `misc` (
 --
 
 INSERT INTO `misc` (`clave`, `valor`, `actualizada`) VALUES
-('latencia', '', '2017-08-12 19:43:31'),
-('recursos', '', '2017-08-12 19:43:54');
+('latencia', '', '2017-08-30 11:44:08'),
+('recursos', '', '2017-08-30 11:44:18');
 
 -- --------------------------------------------------------
 
@@ -80,7 +80,7 @@ CREATE TABLE `usuarios` (
   `db` longtext COLLATE utf8_bin NOT NULL,
   `privateKey` text COLLATE utf8_bin NOT NULL,
   `publicKey` text COLLATE utf8_bin NOT NULL,
-  `modificado` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `modificado` bigint(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
@@ -124,7 +124,7 @@ ALTER TABLE `test`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;COMMIT;
+  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT;COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
