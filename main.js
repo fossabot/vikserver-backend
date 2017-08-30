@@ -1,7 +1,6 @@
 console.log("Iniciando backend...");
 //Parte general
 const fs=require("fs");
-const moment=require("moment-timezone");
 var creds=require("./.privado/credenciales.json");
 
 //Parte de MySQL
@@ -153,8 +152,8 @@ io.on("connection", socket=>{
 				socket.emit("decidir_sync2", false);
 				return;
 			}
-			let fechaSrv=moment.tz(res.modificado, "Europe/Madrid").format("x");
-			socket.emit("msg", {srv: fechaSrv, res: res, msg: a.msg.fecha});
+			let fechaSrv=res.modificado;
+			socket.emit("msg", {srv: fechaSrv, msg: a.msg.fecha});
 			if(fechaSrv>a.msg.fecha){
 				socket.emit("decidir_sync2", "servidor");
 				return;
@@ -170,14 +169,12 @@ function sync(a, socket){
 	desencriptar(a.msg).then(b=>{
 		let c=JSON.parse(b.data);
 		comprobar({msg: c.db, usuario: c.usuario}).then(d=>{
-			console.log("DB chk OK");
 			if(d==false){
 				socket.emit("direct", "pgp_sign_check_nok");
 				socket.emit("sync2", false);
 				throw new Error("No hemos podido verificar que la base de datos sea de tu propiedad");
 			}
-			query("UPDATE usuarios SET db='"+new Buffer(d.data).toString("base64")+"' WHERE nombre='"+c.usuario+"'").then(a=>{
-				console.log("MySQL query OK");
+			query("UPDATE usuarios SET db='"+new Buffer(d.data).toString("base64")+"',modificado='"+c.fecha+"' WHERE nombre='"+c.usuario+"'").then(a=>{
 				socket.emit("sync2", true);
 			});
 		}).catch(e=>{
