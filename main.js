@@ -1,5 +1,6 @@
 console.log("Iniciando backend...");
 //Parte general
+const crypto=require("crypto")
 const fs=require("fs");
 var creds=require("./.privado/credenciales.json");
 
@@ -160,6 +161,26 @@ io.on("connection", socket=>{
 				socket.emit("decidir_sync2", "cliente");
 				return;
 			}
+		});
+	});
+	socket.on("get-link", a=>{
+		let ln=a.msg.link;
+		return query(`SELECT * FROM short WHERE uid='${ln}'`).then(a=>{
+			if(a.res.length<1) return socket.emit("err", "Identificador incorrecto. Es posible que se haya eliminado");
+			return socket.emit("get-link2", a.res[0].link);
+		});
+	});
+	socket.on("set-public", a=>{
+		desencriptar(a.msg.data).then(b=>{
+			comprobar({usuario: a.msg.usuario, msg: b.data}).then(c=>{
+				let d=c.data;
+				let uid=crypto.randomBytes(3).toString("hex");
+				query(`INSERT INTO short (link,uid,usuario) VALUES (${d.link},${uid},${d.link})`).then(()=>{
+					socket.emit("set-public2", {status: true});
+				}).catch(e=>{
+					socket.emit("set-public2", {status: false, err: e});
+				});
+			});
 		});
 	});
 });
