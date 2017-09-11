@@ -171,14 +171,24 @@ io.on("connection", socket=>{
 		});
 	});
 	socket.on("set-public", a=>{
-		desencriptar(a.msg.data).then(b=>{
-			comprobar({usuario: a.msg.usuario, msg: b.data}).then(c=>{
+		desencriptar(a.msg).then(b=>{
+			comprobar({usuario: b.usuario, msg: b.data}).then(c=>{
 				let d=c.data;
-				let uid=crypto.randomBytes(3).toString("hex");
-				query(`INSERT INTO short (link,uid,usuario) VALUES (${d.link},${uid},${d.link})`).then(()=>{
+				query(`INSERT INTO short (link,uid,usuario) VALUES (${d.link},${d.uid},${d.link})`).then(()=>{
 					socket.emit("set-public2", {status: true});
 				}).catch(e=>{
 					socket.emit("set-public2", {status: false, err: e});
+				});
+			});
+		});
+	});
+	socket.on("update-public", a=>{
+		desencriptar(a.msg.data).then(b=>{
+			comprobar({usuario: b.data.usuario, msg: b.data.data}).then((c,d=c.data)=>{
+				query(`UPDATE short SET link='${d.link}' WHERE uid='${d.uid}'`).then(()=>{
+					socket.emit("update-public2", {status: true});
+				}).catch(e=>{
+					socket.emit("update-public2", {status: false, err: e});
 				});
 			});
 		});
