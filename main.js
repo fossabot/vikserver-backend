@@ -1,5 +1,6 @@
 console.log("Iniciando backend...");
 //Parte general
+const crypto=require("crypto")
 const fs=require("fs");
 var creds=require("./.privado/credenciales.json");
 
@@ -160,6 +161,55 @@ io.on("connection", socket=>{
 				socket.emit("decidir_sync2", "cliente");
 				return;
 			}
+		});
+	});
+	socket.on("get-link", a=>{
+		let ln=a.msg.link;
+		if(ln.length!=6) return socket.emit("err", "Invalid identifier");
+		return query(`SELECT * FROM short WHERE uid='${ln}'`).then(a=>{
+			if(a.res.length<1){
+				socket.emit("err", "Identificador incorrecto. Es posible que se haya eliminado");
+				socket.emit("get-link2", false);
+				return;
+			}
+			return socket.emit("get-link2", a.res[0].link);
+		});
+	});
+	socket.on("set-public", a=>{
+		desencriptar(a.msg).then(b=>{
+			let x=JSON.parse(b.data);
+			comprobar({usuario: x.usuario, msg: x.data.data}).then(c=>{
+				let d=JSON.parse(c.data);
+				query(`INSERT INTO short (link,uid,usuario) VALUES ('${d.link}','${d.uid}','${b.usuario}')`).then(()=>{
+					socket.emit("set-public2", {status: true});
+				}).catch(e=>{
+					socket.emit("set-public2", {status: false, err: e});
+				});
+			});
+		});
+	});
+	socket.on("update-public", a=>{
+		desencriptar(a.msg).then(b=>{
+			let x=JSON.parse(b.data);
+			comprobar({usuario: x.usuario, msg: x.data.data}).then((c,d=JSON.parse(c.data))=>{
+				query(`UPDATE short SET link='${d.link}' WHERE uid='${d.uid}'`).then(()=>{
+					socket.emit("update-public2", {status: true});
+				}).catch(e=>{
+					socket.emit("update-public2", {status: false, err: e});
+				});
+			});
+		});
+	});
+	socket.on("del-public", a=>{
+		desencriptar(a.msg).then(b=>{
+			let x=JSON.parse(b.data);
+			comprobar({usuario: x.usuario, msg: x.data.data}).then((c, d=JSON.parse(c.data))=>{
+				query(`DELETE FROM short WHERE uid='${d.uid}'`).then(()=>{
+					socket.emit("del-public2", {status: true});
+				}).catch(e=>{
+					socket.emit("update-public2", {status: false, err: e});
+				});
+			});
 		});
 	});
 });
