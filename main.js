@@ -165,6 +165,7 @@ io.on("connection", socket=>{
 	});
 	socket.on("get-link", a=>{
 		let ln=a.msg.link;
+		if(ln.length!=6) return socket.emit("err", "Invalid identifier");
 		return query(`SELECT * FROM short WHERE uid='${ln}'`).then(a=>{
 			if(a.res.length<1){
 				socket.emit("err", "Identificador incorrecto. Es posible que se haya eliminado");
