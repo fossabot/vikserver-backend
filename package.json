@@ -23,12 +23,12 @@
   },
   "homepage": "https://github.com/vikserver/vikserver-backend#readme",
   "dependencies": {
-    "express": "^4.15.3",
+    "express": "^4.16.2",
     "fs": "0.0.1-security",
     "http": "0.0.0",
     "js-sha256": "^0.6.0",
-    "mysql": "^2.14.1",
-    "openpgp": "^2.5.8",
+    "mysql": "^2.15.0",
+    "openpgp": "^2.5.12",
     "ping": "^0.2.2",
     "socket.io": "^2.0.3"
   }
