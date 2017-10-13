@@ -180,7 +180,7 @@ io.on("connection", socket=>{
 			let x=JSON.parse(b.data);
 			comprobar({usuario: x.usuario, msg: x.data.data}).then(c=>{
 				let d=JSON.parse(c.data);
-				query(`INSERT INTO short (link,uid,usuario) VALUES ('${d.link}','${d.uid}','${b.usuario}')`).then(()=>{
+				query(`INSERT INTO short (link,uid,usuario) VALUES ('${d.link}','${d.uid}','${d.usuario}')`).then(()=>{
 					socket.emit("set-public2", {status: true});
 				}).catch(e=>{
 					socket.emit("set-public2", {status: false, err: e});
