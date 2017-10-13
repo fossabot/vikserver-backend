@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 172.17.0.2:3306
--- Tiempo de generación: 24-09-2017 a las 20:54:45
+-- Tiempo de generación: 13-10-2017 a las 14:49:58
 -- Versión del servidor: 10.1.23-MariaDB-1~jessie
--- Versión de PHP: 7.1.9
+-- Versión de PHP: 7.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -52,8 +52,8 @@ CREATE TABLE `misc` (
 --
 
 INSERT INTO `misc` (`clave`, `valor`, `actualizada`) VALUES
-('latencia', '19', '2017-09-22 22:57:17'),
-('recursos', '{\"cpu\":[0.97314453125,1.05908203125,0.9189453125],\"mem\":{\"rss\":68669440,\"heapTotal\":20209664,\"heapUs', '2017-09-22 22:57:17');
+('latencia', '16.6', '2017-10-13 14:48:15'),
+('recursos', '{\"cpu\":[0.662109375,0.8798828125,1.0224609375],\"mem\":{\"rss\":50040832,\"heapTotal\":19005440,\"heapUsed\"', '2017-10-13 14:48:15');
 
 -- --------------------------------------------------------
 
@@ -64,7 +64,7 @@ INSERT INTO `misc` (`clave`, `valor`, `actualizada`) VALUES
 CREATE TABLE `short` (
   `id` int(10) NOT NULL,
   `link` longtext COLLATE utf8_bin NOT NULL,
-  `uid` mediumint(30) NOT NULL,
+  `uid` varchar(30) COLLATE utf8_bin NOT NULL,
   `usuario` varchar(30) COLLATE utf8_bin NOT NULL,
   `modificado` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
@@ -140,7 +140,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `short`
 --
 ALTER TABLE `short`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 --
 -- AUTO_INCREMENT de la tabla `test`
 --
