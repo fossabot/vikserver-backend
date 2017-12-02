@@ -212,6 +212,10 @@ io.on("connection", socket=>{
 			});
 		});
 	});
+	socket.on("dbsync", a=>{
+		console.log(a);
+		return socket.emit("dbsync2", {status: 200});
+	});
 });
 
 function sync(a, socket){
