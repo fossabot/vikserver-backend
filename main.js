@@ -146,21 +146,10 @@ io.on("connection", socket=>{
 		sync(a, socket);
 	});
 	socket.on("decidir_sync", a=>{
-		query("SELECT SHA2(db, '256'),modificado FROM usuarios WHERE nombre='"+a.msg.usuario+"'").then(b=>{
-			let sSha=b.res[0]['SHA2(db, \'256\')'];
-			let res=b.res[0];
-			if(sSha==a.msg.db){
-				socket.emit("decidir_sync2", false);
-				return;
-			}
-			let fechaSrv=res.modificado;
-			if(fechaSrv>a.msg.fecha){
-				socket.emit("decidir_sync2", "servidor");
-				return;
-			}else{
-				socket.emit("decidir_sync2", "cliente");
-				return;
-			}
+		decidir_sync(a).then(b=>{
+			return socket.emit("decidir_sync2", b);
+		}).catch(e=>{
+			console.error("Ha sucedido un error al decidir la sincronización de la base de datos");
 		});
 	});
 	socket.on("get-link", a=>{
@@ -214,10 +203,38 @@ io.on("connection", socket=>{
 	});
 	socket.on("dbsync", a=>{
 		console.log(a);
-		return socket.emit("dbsync2", {status: 200});
+		let salida={};
+		for(let usuario in a){
+			comprobar({usuario: usuario, msg: a[usuario]}).then(b=>{
+				let actual=db[usuario];
+				salida.status=200;
+				decidir_sync({msg:{usuario: usuario, db: actual.hash, fecha: actual.fecha}}).then(c=>{
+					if(c=="false"||c=="servidor") return;
+					if(c=="cliente") sync({msg: actual.db}, socket);
+				});
+			}).catch(e=>{
+				salida.status=403;
+				salida.msg="La firma del usuario no es correcta";
+			});
+		}
+		
 	});
 });
-
+function decidir_sync(a){
+	return query("SELECT SHA2(db, '256'),modificado FROM usuarios WHERE nombre='"+a.msg.usuario+"'").then(b=>{
+		let sSha=b.res[0]['SHA2(db, \'256\')'];
+		let res=b.res[0];
+		if(sSha==a.msg.db){
+			return false;
+		}
+		let fechaSrv=res.modificado;
+		if(fechaSrv>a.msg.fecha){
+			return "servidor";
+		}else{
+			return "cliente";
+		}
+	});
+}
 function sync(a, socket){
 	desencriptar(a.msg).then(b=>{
 		let c=JSON.parse(b.data);
@@ -261,6 +278,9 @@ function comprobar(a){
 				}).then(d=>{
 					if(d.signatures[0].valid){
 						resolver({data: d.data});
+						return;
+					}else{
+						rechazar({data: d.data, status: "Invalid"});
 						return;
 					}
 				});
