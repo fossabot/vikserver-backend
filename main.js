@@ -220,6 +220,7 @@ io.on("connection", socket=>{
 		
 	});
 });
+
 function decidir_sync(a){
 	return query("SELECT SHA2(db, '256'),modificado FROM usuarios WHERE nombre='"+a.msg.usuario+"'").then(b=>{
 		let sSha=b.res[0]['SHA2(db, \'256\')'];
@@ -241,14 +242,15 @@ function sync(a, socket){
 		comprobar({msg: c.db, usuario: c.usuario}).then(d=>{
 			if(d==false){
 				socket.emit("direct", "pgp_sign_check_nok");
-				socket.emit("sync2", false);
+				socket.emit("sync2", {error: true, msg: "pgp_sign_check_nok"});
 				throw new Error("No hemos podido verificar que la base de datos sea de tu propiedad");
 			}
 			query("UPDATE usuarios SET db='"+new Buffer(d.data).toString("base64")+"',modificado='"+c.fecha+"' WHERE nombre='"+c.usuario+"'").then(a=>{
 				socket.emit("sync2", true);
 			});
 		}).catch(e=>{
-			socket.emit("sync2", false);
+			socket.emit("direct", "pgp_sign_check_nok");
+			socket.emit("sync2", {error: true, msg: "pgp_sign_check_nok"});
 		});
 	}).catch(e=>{
 		socket.emit("sync2", false);
