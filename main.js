@@ -302,18 +302,6 @@ function desencriptar(a){
 		privateKey: pgpObj.privada
 	});
 }
-
-//Parte de monitorización
-const ping=require("ping");
-const os=require("os");
-setInterval(()=>{
-	ping.promise.probe("victor.zona.digital").then(a=>{
-		query("UPDATE misc SET valor='"+a.time+"' WHERE clave='latencia'").then(()=>{
-			console.log("Latencia hasta victor.zona.digital: "+a.time);
-		});
-	});
-	query("UPDATE misc SET valor='"+JSON.stringify({cpu: os.loadavg(), mem: process.memoryUsage()})+"' WHERE clave='recursos'");
-}, 100000);
 process.on("exit", code=>{
 	console.log("Cerrando backend en código "+code);
 });
