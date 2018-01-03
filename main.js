@@ -302,6 +302,15 @@ function desencriptar(a){
 		privateKey: pgpObj.privada
 	});
 }
+
+process.on("unhandledRejection", (p, e)=>{
+	console.log("Handling a unhandled Promise rejection at "+p);
+	console.error(e);
+});
+process.on("uncaughtException", err=>{
+	console.log("Recovering from an uncaught error");
+	console.error(err);
+});
 process.on("exit", code=>{
 	console.log("Cerrando backend en código "+code);
 });
